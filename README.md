@@ -1,8 +1,6 @@
-# Javalon
+# SuDuoku
 
-An expansion of the TicTalk SpringBoot AngularJS Web Service created to help me learn about building
-Web Applications. I plan on integrating a chat room and websockets into this application as well and covering 
-all of the game logic of the classic board game "The Resistance: Avalon". 
+Dedicated to someone awesome in my life who loves Sudoku so we can play multiplayer!  
 
 
 ## Getting Started
@@ -27,7 +25,7 @@ player6            password
 
 Occasionally you may find my project hosted at 
 ```
- https://javalon.herokuapp.com/
+ https://suduoku.herokuapp.com/
  
  Login credientials: (see above)
 ```
@@ -36,7 +34,7 @@ Occasionally you may find my project hosted at
 
 **Local Hosting:** 
 
-Otherwise Navigate to the `Javalon` folder, ensure gradle is installed and run the following: 
+Otherwise Navigate to the `SuDuoku` folder, ensure gradle is installed and run the following: 
 ```
 gradle bootrun
 ```
@@ -61,3 +59,5 @@ Gradle 5.2.1  Java version 1.8.0_192
 ## Acknowledgments 
 
 * Spring Documentation
+* goldensunliu
+
