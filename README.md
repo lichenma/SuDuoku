@@ -12,7 +12,6 @@ This application features authentication using spring security and there are few
 Username           Password
 
 admin              password
-lma                password
 player1            password
 player2            password
 player3            password
