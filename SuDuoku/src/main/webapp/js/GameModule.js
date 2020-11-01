@@ -9,14 +9,10 @@ gameModule.controller('newGameController', ['$rootScope','$scope', '$http', '$lo
         scope.playerId = null;
 
         scope.newGameOptions = {
-            // availablePieces: [
-            //     {name: 'X'},
-            //     {name: 'O'}
-            // ],
             selectedPiece: {name: 'O'},
             availableGameTypes: [
-                {name: 'TWO'},
-                {name: 'SIX'}
+                // {name: 'SIX'},
+                {name: 'TWO'}
             ],
             selectedBoardDimension: {name: 'COMPUTER'}
         };

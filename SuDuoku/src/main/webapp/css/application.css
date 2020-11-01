@@ -16,8 +16,6 @@ a:after { /* Just to add a shadow to the navigation bar*/
 
 
 #mainNav {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
     font-weight: 700;
     font-family: 'Montserrat';
 }
@@ -54,8 +52,6 @@ a:after { /* Just to add a shadow to the navigation bar*/
 
 @media (min-width: 992px) {
     #mainNav {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
         -webkit-transition: padding-top 0.3s, padding-bottom 0.3s;
         transition: padding-top 0.3s, padding-bottom 0.3s;
     }
