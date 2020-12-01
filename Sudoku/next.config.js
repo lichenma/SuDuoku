@@ -20,11 +20,6 @@ module.exports = {
       });
     }
 
-    config.node = {
-      fs: 'empty',
-      net: 'empty'
-    }
-
     config.module.rules.push({
       test: /\.svg$/,
       issuer: {
