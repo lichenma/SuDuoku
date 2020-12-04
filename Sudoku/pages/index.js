@@ -466,7 +466,7 @@ function getNumberOfGroupsAssignedForNumber(number, groups) {
 export default class Index extends Component {
   state = {};
 
-  componentDidMount() {
+  componentDidMount = () => {
     // eslint-disable-next-line no-undef
     if ('serviceWorker' in navigator) {
       // eslint-disable-next-line no-undef
