@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import AppendHead from 'react-append-head';
 import Color from 'color';
 import InputRange from 'react-input-range';
+import Slider from '@material-ui/core/Slider';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import css from 'styled-jsx/css';
@@ -216,19 +217,22 @@ class GenerationUI extends Component {
     return (
       <div className="generation">
         <div className="copy">Start with {this.state.value} cells prefilled</div>
-        <InputRange
-          maxValue={81}
-          minValue={17}
-          value={this.state.value}
-          onChange={value => this.setState({ value })}
-        />
+          <div className="input-range">
+          <Slider
+            max={81}
+            min={17}
+            valueLabelDisplay="auto"
+            defaultValue={30}
+            onChange={(event, value) => this.setState({ value }) || console.log(value)}
+          />
+          </div>
         <div className="button" onClick={this.generateGame}>Play Sudoku</div>
         { /* language=CSS */ }
         <style jsx>{`
             .copy {
                 text-align: center;
                 font-size: 1.3em;
-                margin-bottom: .5em;
+                margin-bottom: 2em;
             }
             .generation {
                 display: flex;
