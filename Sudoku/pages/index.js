@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import NextHead from 'next/head';
 import Color from 'color';
 import InputRange from 'react-input-range';
+import "react-input-range/lib/css/index.css";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import css from 'styled-jsx/css';
@@ -466,7 +467,7 @@ function getNumberOfGroupsAssignedForNumber(number, groups) {
 export default class Index extends Component {
   state = {};
 
-  componentDidMount = () => {
+  componentDidMount() {
     // eslint-disable-next-line no-undef
     if ('serviceWorker' in navigator) {
       // eslint-disable-next-line no-undef
