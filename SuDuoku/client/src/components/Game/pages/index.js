@@ -223,7 +223,7 @@ class GenerationUI extends Component {
             min={17}
             valueLabelDisplay="auto"
             defaultValue={30}
-            onChange={(event, value) => this.setState({ value }) || console.log(value)}
+            onChange={(event, value) => this.setState({ value })}
           />
           </div>
         <div className="button" onClick={this.generateGame}>Play Sudoku</div>
@@ -802,11 +802,6 @@ export default class Index extends Component {
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
           <meta name="description" content={Description} />
           <link href="https://fonts.googleapis.com/css?family=Special+Elite" rel="stylesheet" />
-          <meta property="og:url" content="https://sudoku.sitianliu.com/" />
-          <meta property="og:title" content="Sudoku Evolved" />
-          <meta property="og:type" content="website" />
-          <meta property="og:description" content={Description} />
-          <meta property="og:image" content="https://sudoku.sitianliu.com/static/og-image.png" />
         </AppendHead>
         {!board && this.renderGenerationUI()}
         {board && this.renderHeader()}
@@ -825,7 +820,7 @@ export default class Index extends Component {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                height: 100vh;
+                height: 85vh;
                 width: 100vw;
                 position: relative;
             }

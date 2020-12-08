@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import queryString from 'query-string'
 import io from 'socket.io-client'
 import Index from './pages/index'
+import { Header } from '../Header/Header';
 
 let socket;
 
@@ -14,15 +15,16 @@ const Game = ({ location }) => {
         const { name, room } = queryString.parse(location.search)
 
         socket = io(ENDPOINT)
-
-        console.log(socket);
-
+        console.log(socket)
         setName(name); 
         setRoom(room);
     }, [ENDPOINT, location.search])
 
     return (
-       <Index></Index>
+        <div>
+            <Header/>
+            <Index></Index>
+        </div>
     )
 }
 
