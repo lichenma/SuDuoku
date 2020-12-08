@@ -3,22 +3,23 @@ import queryString from 'query-string'
 import io from 'socket.io-client'
 import Index from './pages/index'
 import { Header } from '../Header/Header';
-
-let socket;
+import { socket } from '../Socket/Socket';
 
 const Game = ({ location }) => {
     const [name, setName] = useState('')
     const [room, setRoom] = useState('')
-    const ENDPOINT = 'localhost:5000'
-
     useEffect(() => {
         const { name, room } = queryString.parse(location.search)
 
-        socket = io(ENDPOINT)
-        console.log(socket)
         setName(name); 
         setRoom(room);
-    }, [ENDPOINT, location.search])
+
+        socket.emit('join', { name, room }, (error) => {
+            if (error){
+                alert(error); 
+            }
+        });
+    }, [location.search])
 
     return (
         <div>
@@ -28,5 +29,5 @@ const Game = ({ location }) => {
     )
 }
 
-export default Game;
+export { Game };
 

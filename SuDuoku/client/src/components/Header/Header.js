@@ -1,19 +1,30 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import io from "socket.io-client";
+import { socket } from '../Socket/Socket';
 import "./header.css";
 // The Header creates links that can be used to navigate
 // between routes.
-var socket;
+
 class Header extends Component {
-/* Creating a Socket client and exporting it at the end to be used across the Place Order, Kitchen, etc components*/
   constructor() {
     super();
     this.state = {
-      endpoint: 'http://localhost:5000/'
+      currentUsers: []
     };
-    socket = io(this.state.endpoint);
   }
+
+  componentWillMount() {
+    socket.on("roomData", ({ users }) => {
+        const newState = {}; 
+        newState.currentUsers = users; 
+        console.log(users);
+        this.setState({
+            ...newState
+        });
+    });
+  }
+
 render() {
     return (
       <header>
@@ -33,4 +44,4 @@ render() {
     );
   }
 }
-export { Header, socket };
+export { Header };
