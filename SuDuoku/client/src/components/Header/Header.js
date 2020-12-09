@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import { socket } from '../Socket/Socket';
 import { Navbar, Nav } from 'react-bootstrap';
 import "./header.css";
-import { Avatar } from 'material-ui' 
+import { Icon } from './Icon' 
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -38,9 +38,11 @@ render() {
                     <Nav.Link href="/about">About</Nav.Link>
                 </Nav>
                 <Nav>
-                    <li>
-                        <Avatar>H</Avatar>
-                    </li>
+                    {this.state.currentUsers.map(user => (
+                        <li key={user.name}>
+                            <Icon name={user.name}></Icon>
+                        </li>
+                    ))}
                 </Nav>
             </Navbar.Collapse>
         </Navbar>
