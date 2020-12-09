@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import io from "socket.io-client";
 import { socket } from '../Socket/Socket';
+import { Navbar, Nav } from 'react-bootstrap';
 import "./header.css";
-// The Header creates links that can be used to navigate
-// between routes.
+import { Avatar } from 'material-ui' 
+
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 class Header extends Component {
   constructor() {
@@ -28,18 +30,20 @@ class Header extends Component {
 render() {
     return (
       <header>
-        <nav>
-          <ul className="NavClass">
-            <li>
-              <NavLink exact to="/">
-                Join
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/about">About </NavLink>
-            </li>
-          </ul>
-        </nav>
+        <Navbar bg="dark" variant="dark">
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+                <Nav className="mr-auto">
+                    <Nav.Link href="/">Join</Nav.Link>
+                    <Nav.Link href="/about">About</Nav.Link>
+                </Nav>
+                <Nav>
+                    <li>
+                        <Avatar>H</Avatar>
+                    </li>
+                </Nav>
+            </Navbar.Collapse>
+        </Navbar>
       </header>
     );
   }
