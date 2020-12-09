@@ -25,3 +25,11 @@
 .NavClass li a.active{
 color:green;
 }
+
+.navbar-nav .MuiAvatarGroup-avatar{
+    border: none;
+}
+
+.navbar-nav .MuiBadge-badge{
+    box-shadow: 0 0 0 2px #343a40;
+}

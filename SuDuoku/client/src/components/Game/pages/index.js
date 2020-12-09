@@ -135,16 +135,16 @@ const PuzzleStyle = css`
     cursor: pointer;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
-.row {
+.sudokuRow {
     display: flex;
     align-items: center;
     flex: 0;
     width: ${cellWidth * 9}em;
 }
-.row:not(:last-child) {
+.sudokuRow:not(:last-child) {
     border-bottom: 1px solid black;
 }
-.row:nth-child(3n+3):not(:last-child) {
+.sudokuRow:nth-child(3n+3):not(:last-child) {
     border-bottom: 2px solid black !important;
 }
 `;
@@ -719,7 +719,7 @@ export default class Index extends Component {
       <div className="puzzle">
         {board.get('puzzle').map((row, i) => (
           // eslint-disable-next-line react/no-array-index-key
-          <div key={i} className="row">
+          <div key={i} className="sudokuRow">
             {
               row.map((cell, j) => this.renderCell(cell, i, j)).toArray()
             }
@@ -820,7 +820,7 @@ export default class Index extends Component {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                height: 85vh;
+                height: 90vh;
                 width: 100vw;
                 position: relative;
             }

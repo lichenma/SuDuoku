@@ -5,6 +5,7 @@ import { socket } from '../Socket/Socket';
 import { Navbar, Nav } from 'react-bootstrap';
 import "./header.css";
 import { Icon } from './Icon' 
+import { AvatarGroup } from '@material-ui/lab';
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -38,11 +39,13 @@ render() {
                     <Nav.Link href="/about">About</Nav.Link>
                 </Nav>
                 <Nav>
+                    <AvatarGroup max={3}>
                     {this.state.currentUsers.map(user => (
                         <li key={user.name}>
                             <Icon name={user.name}></Icon>
                         </li>
                     ))}
+                    </AvatarGroup>
                 </Nav>
             </Navbar.Collapse>
         </Navbar>
