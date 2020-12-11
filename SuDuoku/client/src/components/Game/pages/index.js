@@ -180,43 +180,6 @@ const CirculuarProgressStyle = css`
 
 const CircularPathD = 'M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831';
 
-function serialize(obj){
-  return JSON.stringify(obj);
-}
-
-function deserialize(obj){
-  var input = JSON.parse(obj)
-  var res = {}
-  res.board = input.board;
-  console.log("here")
-  console.log(res.board)
-
-  if (res.board){
-    var puzzle = res.board.get('puzzle');
-
-    var updatedPuzzle = puzzle.map((row)=> {
-      return row.map((col) => {
-        if (col.has('notes')){
-          col['notes'] = new Set(col.get('notes'))
-        } else {
-          return col; 
-        }
-      })
-    }); 
-    console.log(updatedPuzzle)
-    res.board.set('puzzle', updatedPuzzle);
-  }
-
-  res.board = fromJS(res.board); 
-  res.history = input.history && List(input.history);
-  res.historyOffSet = input.historyOffSet; 
-  res.solution = input.solution;  
-
-  console.log("deserialize")
-  console.log(res);
-  return res; 
-}
-
 function getBackGroundColor({
   conflict, isPeer, sameValue, isSelected,
 }) {
@@ -525,12 +488,65 @@ export default class Index extends Component {
     }
 
     socket.on("game", ({ room, moves }) => {
-        var newState = deserialize(moves.moves); 
+
+        var newState = this.deserialize(moves.moves, this.state); 
         this.setState({
             ...newState
         });
     });
   }
+
+  serialize(obj){
+    return JSON.stringify(obj);
+  }
+  
+  deserialize(obj){
+    var input = JSON.parse(obj)
+    var res = {}
+    var board = input.board;
+  
+    if (board){
+      var puzzle = board.puzzle;
+      var updatedPuzzle = puzzle.map((row)=> {
+        return row.map((col) => {
+          if ('notes' in col){
+            col['notes'] = new Set(col['notes'])
+            return col;
+          } else {
+            return col; 
+          }
+        })
+      }); 
+      board.puzzle = updatedPuzzle
+      delete board.selected
+    }
+  
+    res.board = fromJS(board); 
+
+    if (this.getSelected()){
+      var selectedCoordinates = this.getSelected();
+      res.board = res.board.set('selected', selectedCoordinates);
+    } else {
+      res.board = res.board.set('selected', null);
+    }
+
+    res.history = input.history && List(input.history);
+    res.historyOffSet = input.historyOffSet; 
+    res.solution = input.solution;  
+  
+    console.log("deserialize")
+    console.log(res);
+    return res; 
+  }
+
+  getSelected() {
+    if (this.state && this.state['board'] && this.state['board'].get('selected')){
+      return this.state['board'].get('selected');
+    } else {
+      return null; 
+    }
+  }
+
   getSelectedCell() {
     const { board } = this.state;
     const selected = board.get('selected');
@@ -562,11 +578,7 @@ export default class Index extends Component {
       board, history: List.of(board), historyOffSet: 0, solution,
     });
 
-    console.log({
-      board, history: List.of(board), historyOffSet: 0, solution,
-    });
-
-    socket.emit('sendMoves', serialize({
+    socket.emit('sendMoves', this.serialize({
       board, history: List.of(board), historyOffSet: 0, solution,
     }));
   }
@@ -605,9 +617,10 @@ export default class Index extends Component {
     history = history.push(newBoard);
     // update the game
     this.setState({ board: newBoard, history, historyOffSet: history.size - 1 });
+
     console.log("local changes")
     console.log({ board: newBoard, history, historyOffSet: history.size - 1 });
-    socket.emit('sendMoves', serialize({ board: newBoard, history, historyOffSet: history.size - 1 }));
+    socket.emit('sendMoves', this.serialize({ board: newBoard, history, historyOffSet: history.size - 1 }));
   };
 
   canUndo = () => this.state.historyOffSet > 0

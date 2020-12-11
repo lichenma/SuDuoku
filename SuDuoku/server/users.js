@@ -12,6 +12,10 @@ const addUser = ({ id, name, room}) => {
         return { error: 'Username and room are required.' }; 
     }
 
+    if (getUsersInRoom(room).length>=2){
+        return { error: 'Game is currently created to support at most two players' }
+    }
+
     if (existingUser) {
         return { error: 'Username is taken,' }; 
     }
