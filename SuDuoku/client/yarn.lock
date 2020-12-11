@@ -6238,6 +6238,11 @@
   "resolved" "https://registry.npmjs.org/immer/-/immer-7.0.9.tgz"
   "version" "7.0.9"
 
+"immutable@^4.0.0-rc.12":
+  "integrity" "sha512-0M2XxkZLx/mi3t8NVwIm1g8nHoEmM9p9UBl/G9k4+hm0kBgOVdMV/B3CY5dQ8qG8qc80NN4gDV4HQv6FTJ5q7A=="
+  "resolved" "https://registry.npmjs.org/immutable/-/immutable-4.0.0-rc.12.tgz"
+  "version" "4.0.0-rc.12"
+
 "import-cwd@^2.0.0":
   "integrity" "sha1-qmzzbnInYShcs3HsZRn1PiQ1sKk="
   "resolved" "https://registry.npmjs.org/import-cwd/-/import-cwd-2.1.0.tgz"
@@ -9840,6 +9845,11 @@
     "raf" "^3.4.1"
     "regenerator-runtime" "^0.13.7"
     "whatwg-fetch" "^3.4.1"
+
+"react-append-head@^1.0.11":
+  "integrity" "sha512-SbygczwKdDJue/IfJj+7kSipFPs33xFPs6U8ljXH5q9BAXPYAJmYgbzTdK75DT/e9/xxkc3ilp1UHvjKOyc6YA=="
+  "resolved" "https://registry.npmjs.org/react-append-head/-/react-append-head-1.0.11.tgz"
+  "version" "1.0.11"
 
 "react-bootstrap@^1.4.0":
   "integrity" "sha512-0BMzgeUAxH126v7VYDzIXbHxQVHSnniPVKpz9fblumdQpWaiElMnnzk+u8h8DoELX0nCXwPlcUzgXqmpncdc2Q=="

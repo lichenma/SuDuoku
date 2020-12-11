@@ -21,7 +21,6 @@ class Header extends Component {
     socket.on("roomData", ({ users }) => {
         const newState = {}; 
         newState.currentUsers = users; 
-        console.log(users);
         this.setState({
             ...newState
         });

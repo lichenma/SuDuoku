@@ -6,6 +6,8 @@ import AppendHead from 'react-append-head';
 import Color from 'color';
 import InputRange from 'react-input-range';
 import Slider from '@material-ui/core/Slider';
+import { socket } from '../../Socket/Socket';
+
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import css from 'styled-jsx/css';
@@ -177,6 +179,43 @@ const CirculuarProgressStyle = css`
 `;
 
 const CircularPathD = 'M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831';
+
+function serialize(obj){
+  return JSON.stringify(obj);
+}
+
+function deserialize(obj){
+  var input = JSON.parse(obj)
+  var res = {}
+  res.board = input.board;
+  console.log("here")
+  console.log(res.board)
+
+  if (res.board){
+    var puzzle = res.board.get('puzzle');
+
+    var updatedPuzzle = puzzle.map((row)=> {
+      return row.map((col) => {
+        if (col.has('notes')){
+          col['notes'] = new Set(col.get('notes'))
+        } else {
+          return col; 
+        }
+      })
+    }); 
+    console.log(updatedPuzzle)
+    res.board.set('puzzle', updatedPuzzle);
+  }
+
+  res.board = fromJS(res.board); 
+  res.history = input.history && List(input.history);
+  res.historyOffSet = input.historyOffSet; 
+  res.solution = input.solution;  
+
+  console.log("deserialize")
+  console.log(res);
+  return res; 
+}
 
 function getBackGroundColor({
   conflict, isPeer, sameValue, isSelected,
@@ -484,6 +523,13 @@ export default class Index extends Component {
           console.warn('service worker registration failed', err.message);
         });
     }
+
+    socket.on("game", ({ room, moves }) => {
+        var newState = deserialize(moves.moves); 
+        this.setState({
+            ...newState
+        });
+    });
   }
   getSelectedCell() {
     const { board } = this.state;
@@ -515,6 +561,14 @@ export default class Index extends Component {
     this.setState({
       board, history: List.of(board), historyOffSet: 0, solution,
     });
+
+    console.log({
+      board, history: List.of(board), historyOffSet: 0, solution,
+    });
+
+    socket.emit('sendMoves', serialize({
+      board, history: List.of(board), historyOffSet: 0, solution,
+    }));
   }
 
   addNumberAsNote = (number) => {
@@ -551,6 +605,9 @@ export default class Index extends Component {
     history = history.push(newBoard);
     // update the game
     this.setState({ board: newBoard, history, historyOffSet: history.size - 1 });
+    console.log("local changes")
+    console.log({ board: newBoard, history, historyOffSet: history.size - 1 });
+    socket.emit('sendMoves', serialize({ board: newBoard, history, historyOffSet: history.size - 1 }));
   };
 
   canUndo = () => this.state.historyOffSet > 0

@@ -1,3 +1,4 @@
+const { removeGame } = require('./games');
 // storing current users in following array 
 const users = []
 
@@ -25,6 +26,10 @@ const addUser = ({ id, name, room}) => {
 const removeUser = (id) => {
     const index = users.findIndex((user) => user.id === id); 
     if (index !== -1){
+        if (getUsersInRoom(getUser(id).room).length === 1){
+            // clear the game data 
+            removeGame(getUser(id).room);
+        }
         return users.splice(index, 1)[0]; 
     }
 }
