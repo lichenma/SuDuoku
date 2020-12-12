@@ -358,6 +358,8 @@ Cell.propTypes = {
   notes: PropTypes.instanceOf(Set),
   // if the current cell does not satisfy the game constraint
   conflict: PropTypes.bool.isRequired,
+  // if other user selected cell 
+  groupSelected: PropTypes.bool,
 };
 
 Cell.defaultProps = {
@@ -488,11 +490,15 @@ export default class Index extends Component {
     }
 
     socket.on("game", ({ room, moves }) => {
-
         var newState = this.deserialize(moves.moves, this.state); 
         this.setState({
             ...newState
         });
+    });
+
+    socket.on("select", ({ room, select }) => {
+        var groupSelected = this.deserializeSelected(select); 
+        console.log(groupSelected);
     });
   }
 
@@ -504,7 +510,7 @@ export default class Index extends Component {
     var input = JSON.parse(obj)
     var res = {}
     var board = input.board;
-  
+    
     if (board){
       var puzzle = board.puzzle;
       var updatedPuzzle = puzzle.map((row)=> {
@@ -526,9 +532,7 @@ export default class Index extends Component {
     if (this.getSelected()){
       var selectedCoordinates = this.getSelected();
       res.board = res.board.set('selected', selectedCoordinates);
-    } else {
-      res.board = res.board.set('selected', null);
-    }
+    } 
 
     res.history = input.history && List(input.history);
     res.historyOffSet = input.historyOffSet; 
@@ -537,6 +541,14 @@ export default class Index extends Component {
     console.log("deserialize")
     console.log(res);
     return res; 
+  }
+
+  serializeSelected(obj){
+    return JSON.stringify(obj);
+  }
+
+  deserializeSelected(obj){
+    return JSON.parse(obj);
   }
 
   getSelected() {
@@ -691,6 +703,10 @@ export default class Index extends Component {
     let { board } = this.state;
     board = board.set('selected', { x, y });
     this.setState({ board });
+
+    console.log("sending selection")
+    console.log(board.get('selected'));
+    socket.emit('sendSelected', this.serializeSelected(board.get('selected')));
   };
 
   isConflict(i, j) {

@@ -34,6 +34,7 @@ io.on('connection', (socket) => {
         socket.join(user.room); 
         
         if (existingGame(user.room)) {
+            console.log(getGame(user.room))
             socket.emit('game', { room: user.room, moves: getGame(user.room) });
             console.log(getGame(user.room));
         }
@@ -45,6 +46,11 @@ io.on('connection', (socket) => {
     socket.on('sendMoves', (moves, callback) => {
         const user = getUser(socket.id);  
         io.to(user.room).emit('game', { room: user.room, moves: updateGame({ room: user.room, moves: moves }) });
+    }); 
+
+    socket.on('sendSelected', (select, callback) => {
+        const user = getUser(socket.id)
+        socket.broadcast.emit('select', { room: user.room, select: select}); 
     })
 
     socket.on('disconnect', () => {

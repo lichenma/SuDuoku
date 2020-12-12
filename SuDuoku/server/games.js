@@ -1,9 +1,8 @@
 // storing current moves in following array 
 const games = []
 
-const addGame = ({ room }) => {
+const addGame = ({ room, moves }) => {
     room = room.trim().toLowerCase(); 
-    moves = '{}'
     const game = { room , moves }; 
 
     games.push(game); 
@@ -13,15 +12,21 @@ const addGame = ({ room }) => {
 
 const updateGame = ({ room, moves }) => {
     room = room.trim().toLowerCase(); 
-
-    const game = games.find((game) => game.room === room) || addGame({room: room}); 
-
     if (!room){
         return { error: 'Room is required.' }; 
     }
-     
-    game.moves = moves
-    return game; 
+
+    var index = games.findIndex((game) => game.room === room); 
+
+    if (index != -1){
+        var update = {...games.get(index)};
+        update.moves = moves;  
+        games.splice(index, 1, update)
+    } else {
+        addGame({room: room, moves: moves})
+    }
+
+    return games.find((game) => game.room === room); 
 }
 
 const removeGame = (room) => {
