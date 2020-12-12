@@ -19,7 +19,7 @@ const updateGame = ({ room, moves }) => {
     var index = games.findIndex((game) => game.room === room); 
 
     if (index != -1){
-        var update = {...games.get(index)};
+        var update = {...games[index]};
         update.moves = moves;  
         games.splice(index, 1, update)
     } else {

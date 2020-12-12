@@ -498,7 +498,7 @@ export default class Index extends Component {
 
     socket.on("select", ({ room, select }) => {
         var groupSelected = this.deserializeSelected(select); 
-        console.log(groupSelected);
+        // console.log(groupSelected);
     });
   }
 
@@ -538,8 +538,8 @@ export default class Index extends Component {
     res.historyOffSet = input.historyOffSet; 
     res.solution = input.solution;  
   
-    console.log("deserialize")
-    console.log(res);
+    // console.log("deserialize")
+    // console.log(res);
     return res; 
   }
 
@@ -630,8 +630,8 @@ export default class Index extends Component {
     // update the game
     this.setState({ board: newBoard, history, historyOffSet: history.size - 1 });
 
-    console.log("local changes")
-    console.log({ board: newBoard, history, historyOffSet: history.size - 1 });
+    // console.log("local changes")
+    // console.log({ board: newBoard, history, historyOffSet: history.size - 1 });
     socket.emit('sendMoves', this.serialize({ board: newBoard, history, historyOffSet: history.size - 1 }));
   };
 
@@ -704,8 +704,8 @@ export default class Index extends Component {
     board = board.set('selected', { x, y });
     this.setState({ board });
 
-    console.log("sending selection")
-    console.log(board.get('selected'));
+    // console.log("sending selection")
+    // console.log(board.get('selected'));
     socket.emit('sendSelected', this.serializeSelected(board.get('selected')));
   };
 
