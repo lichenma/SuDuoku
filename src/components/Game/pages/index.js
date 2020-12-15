@@ -32,6 +32,8 @@ const LightBlue300 = '#4FC3F7';
 const Indigo700 = '#303F9F';
 const DeepOrange200 = '#FFAB91';
 const DeepOrange600 = '#F4511E';
+const LightPurple100 = '#DDA0DD'; 
+const LightGreen100 = '#90EE90';
 const ControlNumberColor = Indigo700;
 
 // eslint-disable-next-line no-lone-blocks
@@ -181,12 +183,16 @@ const CirculuarProgressStyle = css`
 const CircularPathD = 'M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831';
 
 function getBackGroundColor({
-  conflict, isPeer, sameValue, isSelected,
+  conflict, isPeer, sameValue, isSelected, isGroupSelected
 }) {
   if (conflict && isPeer && sameValue) {
     return DeepOrange200;
   } else if (sameValue) {
     return LightBlue300;
+  } else if (isGroupSelected && isSelected){
+    return LightPurple100;
+  } else if (isGroupSelected){
+    return LightGreen100;
   } else if (isSelected) {
     return LightBlue200;
   } else if (isPeer) {
@@ -310,10 +316,10 @@ NumberControl.defaultProps = {
 
 const Cell = (props) => {
   const {
-    value, onClick, isPeer, isSelected, sameValue, prefilled, notes, conflict,
+    value, onClick, isPeer, isSelected, isGroupSelected, sameValue, prefilled, notes, conflict,
   } = props;
   const backgroundColor = getBackGroundColor({
-    conflict, isPeer, sameValue, isSelected,
+    conflict, isPeer, sameValue, isSelected, isGroupSelected
   });
   const fontColor = getFontColor({ conflict, prefilled, value });
   return (
@@ -359,7 +365,7 @@ Cell.propTypes = {
   // if the current cell does not satisfy the game constraint
   conflict: PropTypes.bool.isRequired,
   // if other user selected cell 
-  groupSelected: PropTypes.bool,
+  isGroupSelected: PropTypes.bool,
 };
 
 Cell.defaultProps = {
@@ -435,7 +441,7 @@ function makeBoard({ puzzle }) {
       };
     })
   ));
-  return fromJS({ puzzle: result, selected: false, choices: { rows, columns, squares } });
+  return fromJS({ puzzle: result, selected: false, groupSelected: false, choices: { rows, columns, squares } });
 }
 
 /**
@@ -498,7 +504,7 @@ export default class Index extends Component {
 
     socket.on("select", ({ room, select }) => {
         var groupSelected = this.deserializeSelected(select); 
-        // console.log(groupSelected);
+        this.groupSelectCell(groupSelected);
     });
   }
 
@@ -562,6 +568,12 @@ export default class Index extends Component {
   getSelectedCell() {
     const { board } = this.state;
     const selected = board.get('selected');
+    return selected && board.get('puzzle').getIn([selected.x, selected.y]);
+  }
+
+  getGroupSelectedCell() {
+    const { board } = this.state; 
+    const selected = board.get('groupSelected')
     return selected && board.get('puzzle').getIn([selected.x, selected.y]);
   }
 
@@ -704,10 +716,14 @@ export default class Index extends Component {
     board = board.set('selected', { x, y });
     this.setState({ board });
 
-    // console.log("sending selection")
-    // console.log(board.get('selected'));
     socket.emit('sendSelected', this.serializeSelected(board.get('selected')));
   };
+
+  groupSelectCell(coord) {
+    let { board } = this.state;
+    board = board.set('groupSelected', coord);
+    this.setState({ board });
+  }
 
   isConflict(i, j) {
     const { value } = this.state.board.getIn(['puzzle', i, j]).toJSON();
@@ -725,6 +741,7 @@ export default class Index extends Component {
   renderCell(cell, x, y) {
     const { board } = this.state;
     const selected = this.getSelectedCell();
+    const groupSelected = this.getGroupSelectedCell(); 
     const { value, prefilled, notes } = cell.toJSON();
     const conflict = this.isConflict(x, y);
     const peer = areCoordinatePeers({ x, y }, board.get('selected'));
@@ -732,11 +749,13 @@ export default class Index extends Component {
       && value === selected.get('value'));
 
     const isSelected = cell === selected;
+    const isGroupSelected = cell === groupSelected; 
     return (<Cell
       prefilled={prefilled}
       notes={notes}
       sameValue={sameValue}
       isSelected={isSelected}
+      isGroupSelected={isGroupSelected}
       isPeer={peer}
       value={value}
       onClick={() => { this.selectCell(x, y); }}
