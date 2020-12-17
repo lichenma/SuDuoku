@@ -19,6 +19,15 @@ const Game = ({ location }) => {
                 alert(error); 
             }
         });
+
+        // attempt to reconnect on disconnect
+        socket.on('reconnect', () => {
+            socket.emit('join', { name, room }, (error) => {
+                if (error){
+                    alert(error); 
+                }
+            });
+        });
     }, [location.search])
 
     return (

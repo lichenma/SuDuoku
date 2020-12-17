@@ -496,7 +496,8 @@ export default class Index extends Component {
     }
 
     socket.on("game", ({ room, moves }) => {
-        var newState = this.deserialize(moves.moves, this.state); 
+        var newState = this.deserialize(moves.moves); 
+
         this.setState({
             ...newState
         });
