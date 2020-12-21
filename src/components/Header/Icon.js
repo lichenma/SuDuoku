@@ -66,6 +66,8 @@ function Icon(props){
     var avatar;
     if (name === "lichen"){
         avatar = <Avatar alt="Lichen Ma" src='/turtle.jpg'></Avatar>
+    } else if (name === "yong") {
+      avatar = <Avatar alt="Yong" src='/pig.jpg'></Avatar>
     } else {
         var initials = name.match(/\b\w/g) || []; 
         initials = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase(); 
