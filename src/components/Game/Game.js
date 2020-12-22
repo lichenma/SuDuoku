@@ -22,7 +22,7 @@ const Game = ({ location }) => {
         });
 
         // attempt to reconnect on disconnect
-        socket.on('reconnect', () => {
+        socket.on('connect', () => {
             socket.emit('join', { name, room }, (error) => {
                 if (error){
                     alert(error); 
