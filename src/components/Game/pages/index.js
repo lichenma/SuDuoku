@@ -7,7 +7,7 @@ import Color from 'color';
 import InputRange from 'react-input-range';
 import Slider from '@material-ui/core/Slider';
 import { socket } from '../../Socket/Socket';
-
+import { BoxLoading } from 'react-loadingg';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import css from 'styled-jsx/css';
@@ -476,10 +476,11 @@ function getNumberOfGroupsAssignedForNumber(number, groups) {
   return groups.reduce((accumulator, row) =>
     accumulator + (row.get(number) > 0 ? 1 : 0), 0);
 }
+
+
 // eslint-disable-next-line react/no-multi-comp
 export default class Index extends Component {
   state = {};
-
   componentDidMount() {
     // eslint-disable-next-line no-undef
     if ('serviceWorker' in navigator) {
@@ -863,6 +864,19 @@ export default class Index extends Component {
     );
   }
 
+  renderReconnecting() {
+    return (
+      <div class="wrap">
+        <div>
+            <BoxLoading speed={0.7} size={'large'}/>
+        </div>
+        <div>
+          <p style={{paddingTop: '8em'}}>Reconnecting</p>
+        </div>
+      </div>
+    )
+  }
+
   renderHeader() {
     return (
       <div className="header">
@@ -909,10 +923,11 @@ export default class Index extends Component {
           <meta name="description" content={Description} />
           <link href="https://fonts.googleapis.com/css?family=Special+Elite" rel="stylesheet" />
         </AppendHead>
-        {!board && this.renderGenerationUI()}
-        {board && this.renderHeader()}
-        {board && this.renderPuzzle()}
-        {board && this.renderControls()}
+        {this.props.connected && !board && this.renderGenerationUI()}
+        {this.props.connected && board && this.renderHeader()}
+        {this.props.connected && board && this.renderPuzzle()}
+        {this.props.connected && board && this.renderControls()}
+        {!this.props.connected && this.renderReconnecting()}
         <div className="rooter">
           Made with <span>❤️</span>️ By <a href="https://www.lichenma.github.io/">Lichen Ma</a>
         </div>

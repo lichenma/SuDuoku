@@ -5,7 +5,11 @@ import io from 'socket.io-client'
 const ENDPOINT = 'https://suduoku-server.herokuapp.com/'
 // for testing 
 // const ENDPOINT = 'localhost:5000'
-const socket = io(ENDPOINT)
+const socket = io(ENDPOINT, {
+    'reconnection': true,
+    'reconnectionDelay': 500,
+    'reconnectionAttempts': 30
+  })
 
 export { socket };
 
