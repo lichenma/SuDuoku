@@ -316,7 +316,7 @@ NumberControl.defaultProps = {
 
 const Cell = (props) => {
   const {
-    value, onClick, isPeer, isSelected, isGroupSelected, sameValue, prefilled, notes, conflict,
+    value, onClick, isPeer, isSelected, isGroupSelected, sameValue, prefilled, notes, lastUpdated, lastUpdatedUser, conflict,
   } = props;
   const backgroundColor = getBackGroundColor({
     conflict, isPeer, sameValue, isSelected, isGroupSelected
@@ -362,6 +362,10 @@ Cell.propTypes = {
   prefilled: PropTypes.bool.isRequired,
   // current notes taken on the cell
   notes: PropTypes.instanceOf(Set),
+  // time when the cell was last updated 
+  lastUpdated: PropTypes.string, 
+  // user who made the last edit
+  lastUpdatedUser: PropTypes.string,
   // if the current cell does not satisfy the game constraint
   conflict: PropTypes.bool.isRequired,
   // if other user selected cell 
@@ -371,6 +375,10 @@ Cell.propTypes = {
 Cell.defaultProps = {
   notes: null,
   value: null,
+  // default earliest possible time so all changes will occur after
+  lastUpdated: new Date(-8640000000000000).toString(),
+  lastUpdatedUser: "System"
+
 };
 
 const CirclularProgress = ({ percent }) => (
@@ -438,6 +446,8 @@ function makeBoard({ puzzle }) {
       return {
         value: puzzle[i][j] > 0 ? puzzle[i][j] : null,
         prefilled: !!puzzle[i][j],
+        lastUpdated: new Date().toString(),
+        lastUpdatedUser: "System",
       };
     })
   ));
@@ -453,11 +463,14 @@ function makeBoard({ puzzle }) {
  * @param board the immutable board given to change
  */
 function updateBoardWithNumber({
-  x, y, number, fill = true, board,
+  x, y, number, fill = true, board, name
 }) {
   let cell = board.get('puzzle').getIn([x, y]);
   // delete its notes
   cell = cell.delete('notes');
+  // update the time and user 
+  cell = cell.set('lastUpdated', new Date().toString())
+  cell = cell.set('lastUpdatedUser', name)
   // set or unset its value depending on `fill`
   cell = fill ? cell.set('value', number) : cell.delete('value');
   const increment = fill ? 1 : -1;
@@ -521,17 +534,23 @@ export default class Index extends Component {
     
     if (board){
       var puzzle = board.puzzle;
-      var updatedPuzzle = puzzle.map((row)=> {
-        return row.map((col) => {
-          if ('notes' in col){
-            col['notes'] = new Set(col['notes'])
-            return col;
+      var updatedPuzzle = puzzle.map((row, i)=> {
+        return row.map((cell, j) => {
+          var currCell = this.getCell(i,j);
+          // console.log(cell.lastUpdated)
+          if (currCell && Date.parse(currCell.get('lastUpdated')) > Date.parse(cell.lastUpdated)){
+            return currCell; 
           } else {
-            return col; 
+            if ('notes' in cell){
+              // update the type of notes if exists
+              cell['notes'] = new Set(cell['notes'])
+            }
+            return cell; 
           }
         })
       }); 
       board.puzzle = updatedPuzzle
+      // TODO: do not send selected in the first place
       delete board.selected
     }
   
@@ -565,6 +584,11 @@ export default class Index extends Component {
     } else {
       return null; 
     }
+  }
+
+  getCell(x,y) {
+    const { board } = this.state;
+    return board && board.get('puzzle') && board.get('puzzle').getIn([x, y]);
   }
 
   getSelectedCell() {
@@ -609,7 +633,7 @@ export default class Index extends Component {
     }));
   }
 
-  addNumberAsNote = (number) => {
+  addNumberAsNote = (number, name) => {
     let { board } = this.state;
     let selectedCell = this.getSelectedCell();
     if (!selectedCell) return;
@@ -619,7 +643,7 @@ export default class Index extends Component {
     const currentValue = selectedCell.get('value');
     if (currentValue) {
       board = updateBoardWithNumber({
-        x, y, number: currentValue, fill: false, board: this.state.board,
+        x, y, number: currentValue, fill: false, board: this.state.board, name: name
       });
     }
     let notes = selectedCell.get('notes') || Set();
@@ -687,7 +711,7 @@ export default class Index extends Component {
 
 
   // fill currently selected cell with number
-  fillNumber = (number) => {
+  fillNumber = (number, name) => {
     let { board } = this.state;
     const selectedCell = this.getSelectedCell();
     // no-op if nothing is selected
@@ -700,14 +724,14 @@ export default class Index extends Component {
     // remove the current value and update the game state
     if (currentValue) {
       board = updateBoardWithNumber({
-        x, y, number: currentValue, fill: false, board: this.state.board,
+        x, y, number: currentValue, fill: false, board: this.state.board, name: name
       });
     }
     // update to new number if any
     const setNumber = currentValue !== number && number;
     if (setNumber) {
       board = updateBoardWithNumber({
-        x, y, number, fill: true, board,
+        x, y, number, fill: true, board, name: name
       });
     }
     this.updateBoard(board);
@@ -744,7 +768,7 @@ export default class Index extends Component {
     const { board } = this.state;
     const selected = this.getSelectedCell();
     const groupSelected = this.getGroupSelectedCell(); 
-    const { value, prefilled, notes } = cell.toJSON();
+    const { value, prefilled, notes, lastUpdated, lastUpdatedUser } = cell.toJSON();
     const conflict = this.isConflict(x, y);
     const peer = areCoordinatePeers({ x, y }, board.get('selected'));
     const sameValue = !!(selected && selected.get('value')
@@ -755,6 +779,8 @@ export default class Index extends Component {
     return (<Cell
       prefilled={prefilled}
       notes={notes}
+      lastUpdated={lastUpdated}
+      lastUpdatedUser={lastUpdatedUser}
       sameValue={sameValue}
       isSelected={isSelected}
       isGroupSelected={isGroupSelected}
@@ -768,7 +794,7 @@ export default class Index extends Component {
     />);
   }
 
-  renderNumberControl() {
+  renderNumberControl(name) {
     const selectedCell = this.getSelectedCell();
     const prefilled = selectedCell && selectedCell.get('prefilled');
     return (
@@ -777,8 +803,8 @@ export default class Index extends Component {
           const number = i + 1;
           // handles binding single click and double click callbacks
           const clickHandle = getClickHandler(
-            () => { this.fillNumber(number); },
-            () => { this.addNumberAsNote(number); },
+            () => { this.fillNumber(number, name); },
+            () => { this.addNumberAsNote(number, name); },
           );
           return (
             <NumberControl
@@ -837,10 +863,10 @@ export default class Index extends Component {
     );
   }
 
-  renderControls() {
+  renderControls(name) {
     return (
       <div className="controls">
-        {this.renderNumberControl()}
+        {this.renderNumberControl(name)}
         {this.renderActions()}
         { /* language=CSS */ }
         <style jsx>{`
@@ -926,7 +952,7 @@ export default class Index extends Component {
         {this.props.connected && !board && this.renderGenerationUI()}
         {this.props.connected && board && this.renderHeader()}
         {this.props.connected && board && this.renderPuzzle()}
-        {this.props.connected && board && this.renderControls()}
+        {this.props.connected && board && this.renderControls(this.props.name)}
         {!this.props.connected && this.renderReconnecting()}
         <div className="rooter">
           Made with <span>❤️</span>️ By <a href="https://www.lichenma.github.io/">Lichen Ma</a>

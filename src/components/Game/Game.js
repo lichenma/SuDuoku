@@ -39,7 +39,7 @@ const Game = ({ location }) => {
     return (
         <div>
             <Header/>
-            <Index connected={connected}></Index>
+            <Index connected={connected} name={name}></Index>
         </div>
     )
 }
